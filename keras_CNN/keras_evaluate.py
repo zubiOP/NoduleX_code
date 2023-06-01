@@ -51,7 +51,7 @@ def main():
     model = None
     if split_model:
         print('Loading model design {0}\nand weights {1}'.format(model_file, weights_file))
-        with open(model_file, 'rU') as json_file:
+        with open(model_file, 'r') as json_file:
             model = model_from_json(json_file.read())
         model.load_weights(weights_file)
     else:

@@ -32,7 +32,7 @@ def load_metadata(filename=None):
     avoid_list   = ['nodule_images', 'nodule_classes']
     for key in fp.keys():
         if key not in avoid_list:
-            hd5_metadata[key] = fp[key].value
+            hd5_metadata[key] = fp[key][()]
     return hd5_metadata        
 
 def load_all_from_picklefile(filename=None, test_pct=0.25, neg_bias=None, shuffle_seed=None, malignancy_to_class=None):
@@ -127,7 +127,7 @@ def load_all_from_hdf5(filename=None,  normalize=False, malignancy_to_class=None
         filename = 'LIDC-IDRI.hd5'
     print("Loading data from {0}".format(filename))
     fp = h5py.File(filename, 'r')
-    y  = fp['nodule_classes'].value
+    y  = fp['nodule_classes'][()]
     if malignancy_to_class is not None:
         if len(malignancy_to_class) != 6:
             raise Exception("malignancy_class mapping must contain exactly 6 values, one for each malignancy level 0 - 5")
@@ -135,13 +135,13 @@ def load_all_from_hdf5(filename=None,  normalize=False, malignancy_to_class=None
         for i in range(len(y)):
             y[i] = [malignancy_to_class[int(mal[i])]]
         y = [[v] for v in y]
-    X = fp['nodule_images'].value
+    X = fp['nodule_images'][()]
     X = np.array(X, dtype='float32')
 
     # Normalize if requested
     if normalize or window_normalize:
-        Xmin = fp['nodule_pixel_min'].value
-        Xmax = fp['nodule_pixel_max'].value
+        Xmin = fp['nodule_pixel_min']
+        Xmax = fp['nodule_pixel_max']
         print("{}Normalizing...".format("Window " if window_normalize else ""))
         for idx, img in enumerate(X):
             nXmin = Xmin[idx] if not window_normalize else -1000.0
@@ -281,7 +281,7 @@ class TestTrainSet(object):
         # Open the hdf file 
         self._hdf_file = h5py.File(self._hdf_filename, 'r')
         # Get info on classes and makeup of the dataset by examining the y values (classes):
-        y          = self._hdf_file['nodule_classes'].value        
+        y          = self._hdf_file['nodule_classes'][()]
         if self._malignancy_to_class is not None:
             if malignancy_to_class is not None:
                 mal = self._hdf_file['nodule_malignancy']          
