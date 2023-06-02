@@ -215,7 +215,7 @@ def print_case_table(y_pred, ground_truth, metadata={}):
 
 def array_like(x):
     import collections
-    return isinstance(x, collections.Sequence) or isinstance(x, np.ndarray)
+    return isinstance(x, collections.abc.Sequence) or isinstance(x, np.ndarray)
 
 def is_positive(cls):
     if array_like(cls) and len(cls) > 1:
